@@ -1,8 +1,8 @@
 import type { Config } from 'tailwindcss'
-import { fontFamily } from 'tailwindcss/defaultTheme'
+
 
 const config: Config = {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -17,12 +17,7 @@ const config: Config = {
       }
     },
     extend: {
-      fontFamily: {
-        sans: ['var(--font-sans)', ...fontFamily.sans],
-        serif: ['var(--font-serif)', ...fontFamily.serif],
-        geist: ['var(--font-geist-sans)', ...fontFamily.sans],
-        'geist-mono': ['var(--font-geist-mono)', ...fontFamily.mono]
-      },
+     
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
