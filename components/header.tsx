@@ -12,7 +12,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className='sticky bg-red-900 top-0 z-50  backdrop-blur border-b border-gray-200 dark:border-gray-800 shadow-sm'>
+    <header className='sticky  top-0 z-50  backdrop-blur border-b border-gray-200 dark:border-gray-800 shadow-sm'>
       <nav className='container mx-auto flex items-center justify-between py-3 px-4'>
         {/* Logo */}
         <Link
