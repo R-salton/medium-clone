@@ -21,7 +21,7 @@ import { ImageResizer, handleCommandNavigation} from 'novel'
 import { handleImageDrop, handleImagePaste } from 'novel'
 
 import { slashCommands,suggestionItem } from '@/lib/slash-commands'
-import EditorMenu from '../../components/editor/editor-menu'
+import { EditorMenu } from './editor-menu'
 import { uploadFn } from  '../../components/editor/image-upload'
 import { defaultExtensions} from '../components/editor/extensions'
 import { TextButtons } from '../../components/editor/selectors/text-buttons'

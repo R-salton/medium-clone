@@ -64,3 +64,27 @@ const items: SelectorItem[] = [
     },
     
 ]
+
+
+export const NodeSelector = () => {
+    const { editor } = useEditor()
+
+    if (!editor) return null
+    return (
+        <Button
+         variant='ghost'
+         className="w-12 rounded-none"
+         onClick={(evt) => {
+
+            if(editor.isActive('paragraph')){
+                 editor.chain().focus().clearNodes().run()
+            }
+            else {
+                editor.chain().focus().setParagraph().run()
+            }
+            evt.preventDefault()
+           
+         }}
+         />
+    )
+}
