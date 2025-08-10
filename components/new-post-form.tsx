@@ -17,6 +17,7 @@ import ImageUploader from '@/components/image-uploader'
 import { Dialog ,DialohContent, DialogTrigger } from '@/components/ui/dialog'
 import { newPostSchema } from '@/libb/schemas'
 import { Id } from '@/convex/_generated/dataModel'
+import { is } from 'zod/v4/locales'
 
 type Inputs = z.infer<typeof newPostSchema>
 
@@ -31,7 +32,7 @@ export const NewPostForm = () => {
         register,
         setValue,
         handleSubmit,
-        formState: { errors },
+        formState: { errors ,isSubmitting},
       } = useForm<Inputs>({
         resolver: zodResolver(newPostSchema),
         defaultValues: {}
@@ -105,11 +106,67 @@ export const NewPostForm = () => {
                 <p className='text-red-400 mt-1 px-2 text-xs'>{errors.coverImageId?.message}</p>
               )
              }
+
+             <Dialog open={filePickerIsOpen} onOpenChange={setFilePickerIsOpen}>
+              <DialogTrigger asChild>
+                <Button size='sm'>Select file</Button>
+                </DialogTrigger>
+              <DialohContent>
+                <ImageUploader onUpload={setCoverImageId} />
+              </DialohContent>
+             </Dialog>
             
            
           </div>
         </div>
-      </div>
+
+        {/* Title  and Slug */}
+        <div className="flex justify-between gap-4">
+          <div className="flex-1">
+            <Input
+              type='text'
+              placeholder='Post Title'
+              {...register('title')}
+              />
+              {errors.title?.message && (
+                <p className='text-red-400 mt-1 px-2 text-xs'>{errors.title?.message}</p>
+              )}
+          </div>
+          <div className="flex-1">
+            <Input
+              type='text'
+              placeholder='Post Slug'
+              {...register('slug')}
+              />
+              {errors.slug?.message && (
+                <p className='text-red-400 mt-1 px-2 text-xs'>{errors.slug?.message}</p>
+              )}
+          </div>
+        </div>
+
+        {/* Excerpt */}
+        <div className='mt-4'>
+          <Input
+            type='text'
+            placeholder='Excerpt'
+            {...register('excerpt')}
+            />
+            {errors.excerpt?.message && (
+              <p className='text-red-400 mt-1 px-2 text-xs'>{errors.excerpt?.message}</p>
+            )}
+            
+        </div>
+
+        {/* Content */}
+        <div>
+          <Editor editable= {true} setContent={setContent} />
+        </div>
+        <div>
+          <Button type='submit' disabled={isSubmitting} >
+            {isSubmitting ? 'Creating Post...' : 'Create Post'}
+          </Button>
+        </div>
+      </div>   
     </form>
   )
 }
