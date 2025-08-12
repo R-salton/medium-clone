@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 const onUpload = (file: File) => {
     const promise = fetch('api/upload',{
-        method: 'POST',
+        method: 'POST', 
         headers: {
             'Content-Type': file?.type || 'application/octet-stream',
             "x-vercel-filename": file?.name || 'image.png'
@@ -42,3 +42,7 @@ const onUpload = (file: File) => {
         }
     });
 }
+
+export const uploadFn = createImageUpload({
+    onUpload: onUpload,
+});

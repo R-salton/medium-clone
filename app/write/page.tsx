@@ -1,5 +1,6 @@
 
-import { NewPostForm } from '@/components/new-post-form'
+
+import NewPostForm from '@/components/new-post-form'
 import React from 'react'
 
 const Write = () => {

@@ -1,172 +1,90 @@
+'use client'
 
-import React, { use } from 'react'
-import { toast } from 'sonner'
-import { set, z } from 'zod'
-import { JSONContent} from 'novel'
-import { useState, useEffect } from 'react'
-import { useForm , SubmitHandler } from 'react-hook-form'
-import { useMutation } from 'convex/react'
-import { api } from '@/convex/_generated/api'
-import { useRouter } from 'next/router'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { createSlugFromName } from '@/lib/utils'
-import { Input} from '@/components/ui/input'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import Editor from '@/components/editor/editor'
-import ImageUploader from '@/components/image-uploader'
-import { Dialog ,DialohContent, DialogTrigger } from '@/components/ui/dialog'
-import { newPostSchema } from '@/libb/schemas'
-import { Id } from '@/convex/_generated/dataModel'
-import { is } from 'zod/v4/locales'
+import { FileUploader } from './filePicker/file-picker'
 
-type Inputs = z.infer<typeof newPostSchema>
+export default function NewPostForm() {
+  const [title, setTitle] = useState('')
+  const [subtitle, setSubtitle] = useState('')
+  const [content, setContent] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
-export const NewPostForm = () => {
-    const createPost = useMutation(api.posts.createPost)
-    const router = useRouter();
-
-    const [filePickerIsOpen, setFilePickerIsOpen] = useState(false);
-
-    const {
-        watch,
-        register,
-        setValue,
-        handleSubmit,
-        formState: { errors ,isSubmitting},
-      } = useForm<Inputs>({
-        resolver: zodResolver(newPostSchema),
-        defaultValues: {}
-      });
-    
-
-
-      function setCoverImageId(url: string) {
-        setValue('coverImageId', url)
-        setFilePickerIsOpen(false)
-      }
-
-
-      function setContent(content: JSONContent) {
-        setValue('content', content,{ shouldValidate: true })
-      }
-
-      const title = watch('title')
-
-      useEffect(() => {
-        if (title) {
-          const slug = createSlugFromName(title)
-          if (slug) {
-            setValue('slug', slug, { shouldValidate: true })
-          }
-        }
-
-        
-      }, [title])
-
-
-      const processForm: SubmitHandler<Inputs> = async (data) => {
-        const contentJson = data.content
-        const hasContent = contentJson?.content?.some(c => c.content && c.content.length > 0
-
-        )
-        if (!hasContent) {
-          toast.error('Please enter some content')
-          return
-        }
-        try{
-          const postSlug = await createPost({
-            ...data,
-            coverImage: data.coverImageId as Id<'_storage'> | undefined,
-            content: JSON.stringify(contentJson)
-          })
-          if(!postSlug) throw new Error('Failed to create post')
-            router.push(`/posts/${postSlug}`)
-          toast.success('Post created')
-        } catch (error) {
-          console.error(error)
-          toast.error('Failed to create post')
-        }
-      };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setSuccess(false)
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false)
+      setSuccess(true)
+      setTitle('')
+      setSubtitle('')
+      setContent('')
+    }, 1200)
+  }
 
   return (
-    <form onSubmit={handleSubmit(processForm)} className='mt-6 max-w-2xl'>
-      <div className='flex flex-col gap-4'>
-        {/* Cover Image */}
-        <div className='flex items-between gap-4'>
-          <div className="w-full">
-            <input
-            disabled
-              type="text"
-              placeholder='Select a cover image'
-              {...register('coverImageId')}
-             className='w-full'
-             />
-             {
-              errors.coverImageId?.message && (
-                <p className='text-red-400 mt-1 px-2 text-xs'>{errors.coverImageId?.message}</p>
-              )
-             }
-
-             <Dialog open={filePickerIsOpen} onOpenChange={setFilePickerIsOpen}>
-              <DialogTrigger asChild>
-                <Button size='sm'>Select file</Button>
-                </DialogTrigger>
-              <DialohContent>
-                <ImageUploader onUpload={setCoverImageId} />
-              </DialohContent>
-             </Dialog>
-            
-           
-          </div>
+    <form
+      onSubmit={handleSubmit}
+      className="w-full max-w-2xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 flex flex-col gap-6 mt-10"
+    >
+      <h2 className="text-3xl font-bold text-primary mb-2 text-center">Create New Post</h2>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="title" className="font-semibold text-gray-700 dark:text-gray-200">
+          Title
+        </label>
+        <input
+          id="title"
+          type="text"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition"
+          placeholder="Enter your post title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          required
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="subtitle" className="font-semibold text-gray-700 dark:text-gray-200">
+          Subtitle
+        </label>
+        <input
+          id="subtitle"
+          type="text"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition"
+          placeholder="Add a catchy subtitle"
+          value={subtitle}
+          onChange={e => setSubtitle(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="content" className="font-semibold text-gray-700 dark:text-gray-200">
+          Content
+        </label>
+        <textarea
+          id="content"
+          rows={6}
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition resize-vertical"
+          placeholder="Write your post content here..."
+          value={content}
+          onChange={e => setContent(e.target.value)}
+          required
+        />
+        <FileUploader />
+      </div>
+      <Button
+        type="submit"
+        className="w-full  text-white dark:text-gray-400 font-semibold py-2 bg-[#000319] rounded-lg hover:bg-sky-950  hover:text-gray-700 dark:hover:text- transition duration-300 text-lg"
+        disabled={loading}
+      >
+        {loading ? 'Publishing...' : 'Publish Post'}
+      </Button>
+      {success && (
+        <div className="text-green-600 text-center font-medium mt-2">
+          🎉 Post published successfully!
         </div>
-
-        {/* Title  and Slug */}
-        <div className="flex justify-between gap-4">
-          <div className="flex-1">
-            <Input
-              type='text'
-              placeholder='Post Title'
-              {...register('title')}
-              />
-              {errors.title?.message && (
-                <p className='text-red-400 mt-1 px-2 text-xs'>{errors.title?.message}</p>
-              )}
-          </div>
-          <div className="flex-1">
-            <Input
-              type='text'
-              placeholder='Post Slug'
-              {...register('slug')}
-              />
-              {errors.slug?.message && (
-                <p className='text-red-400 mt-1 px-2 text-xs'>{errors.slug?.message}</p>
-              )}
-          </div>
-        </div>
-
-        {/* Excerpt */}
-        <div className='mt-4'>
-          <Input
-            type='text'
-            placeholder='Excerpt'
-            {...register('excerpt')}
-            />
-            {errors.excerpt?.message && (
-              <p className='text-red-400 mt-1 px-2 text-xs'>{errors.excerpt?.message}</p>
-            )}
-            
-        </div>
-
-        {/* Content */}
-        <div>
-          <Editor editable= {true} setContent={setContent} />
-        </div>
-        <div>
-          <Button type='submit' disabled={isSubmitting} >
-            {isSubmitting ? 'Creating Post...' : 'Create Post'}
-          </Button>
-        </div>
-      </div>   
+      )}
     </form>
   )
 }
